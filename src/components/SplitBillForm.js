@@ -6,9 +6,9 @@ const SplitBillForm = ({selectedFriend, onSplitBill}) => {
 
 
     const [bill, setBill] = useState({
-        value:null,
-        userExpense:null,
-        friendExpense:null,
+        value:0,
+        userExpense:0,
+        friendExpense:0,
         payer:'user'
 
     })
@@ -16,10 +16,27 @@ const SplitBillForm = ({selectedFriend, onSplitBill}) => {
 console.log('payer', bill.payer)
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setBill((prev) => ({
-            ...prev,
-            [name]: (value),
-        }))
+        const newValue = name === "payer" ? value : Number(value);
+
+        setBill((prev) => {
+            if (name === "value") {
+                // Si el valor de la cuenta es menor que userExpense o friendExpense, no actualizar
+                if (newValue < prev.userExpense || newValue < prev.friendExpense) {
+                    return prev;
+                }
+            } else if (name === "userExpense") {
+                // Si el gasto del usuario es mayor que el total, no actualizar
+                if (newValue > prev.value) {
+                    return prev;
+                }
+            }
+    
+            return { ...prev, [name]: newValue };
+        });
+        // setBill((prev) => ({
+        //     ...prev,
+        //     [name]: name === "payer" ? value : Number(value),
+        // }))
     };
 
     const handleSubmit = (e) => {
@@ -37,9 +54,9 @@ console.log('payer', bill.payer)
         
         
          setBill({
-            value: null,
-            userExpense: null,
-            friendExpense: null,
+            value: 0,
+            userExpense: 0,
+            friendExpense: 0,
             payer:'user'
         })
 
